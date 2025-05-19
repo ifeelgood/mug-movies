@@ -38,6 +38,7 @@ nb-configuration.xml
 
 # Local environment
 .env
+.tls/
 
 # Plugin directory
 /.quarkus/cli/plugins/
