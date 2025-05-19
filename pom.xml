@@ -15,6 +15,8 @@
         <quarkus.platform.version>3.22.3</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
+        <formatter.plugin.version>2.26.0</formatter.plugin.version>
+        <impsort.plugin.version>1.12.0</impsort.plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -45,6 +47,10 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-config-yaml</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -82,6 +88,45 @@
                 <configuration>
                     <parameters>true</parameters>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>${formatter.plugin.version}</version>
+                <configuration>
+                    <!-- store outside of target to speed up formatting when mvn clean is used -->
+                    <cachedir>.cache/formatter-maven-plugin-${formatter.plugin.version}</cachedir>
+                    <configFile>.ide/eclipse-format.xml</configFile>
+                    <lineEnding>LF</lineEnding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code</groupId>
+                <artifactId>impsort-maven-plugin</artifactId>
+                <version>${impsort.plugin.version}</version>
+                <configuration>
+                    <!-- store outside of target to speed up formatting when mvn clean is used -->
+                    <cachedir>.cache/impsort-maven-plugin-${impsort.plugin.version}</cachedir>
+                    <groups>java.,javax.,jakarta.,org.,com.,ifg.</groups>
+                    <staticGroups>*</staticGroups>
+                    <removeUnused>true</removeUnused>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sort-imports</id>
+                        <goals>
+                            <goal>sort</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
