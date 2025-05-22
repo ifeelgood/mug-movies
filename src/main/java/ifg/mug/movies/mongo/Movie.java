@@ -1,4 +1,4 @@
-package ifg.mug.movies.mongo.documents;
+package ifg.mug.movies.mongo;
 
 import java.util.Date;
 import java.util.List;
@@ -22,12 +22,14 @@ public class Movie extends PanacheMongoEntity {
     public String rated;
     public Awards awards;
     public String lastupdated;
-    public int year;
+    public int num_mflix_comments;
     public Imdb imdb;
     public List<String> countries;
     public String type;
     public Tomatoes tomatoes;
-    public int num_mflix_comments;
+    public List<String> writers;
+    public Integer metacritic;
+    public int year;
 
     public static class Awards {
         public int wins;
@@ -36,28 +38,33 @@ public class Movie extends PanacheMongoEntity {
     }
 
     public static class Imdb {
-        public double rating;
-        public int votes;
         public int id;
+        public Double rating;
+        public Integer votes;
     }
 
     public static class Tomatoes {
-        public Viewer viewer;
-        public int fresh;
+        public String boxOffice;
+        public String consensus;
         public Critic critic;
-        public int rotten;
+        public Date dvd;
+        public int fresh;
         public Date lastUpdated;
-
-        public static class Viewer {
-            public double rating;
-            public int numReviews;
-            public int meter;
-        }
+        public String production;
+        public int rotten;
+        public Viewer viewer;
+        public String website;
 
         public static class Critic {
-            public double rating;
+            public Integer meter;
             public int numReviews;
-            public int meter;
+            public double rating;
+        }
+
+        public static class Viewer {
+            public Integer meter;
+            public int numReviews;
+            public double rating;
         }
     }
 }
