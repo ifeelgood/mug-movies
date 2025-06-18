@@ -1,21 +1,21 @@
-package ifg;
+package ifg.mug.movies.rest;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-class GreetingResourceTest {
+class MovieResourceTest {
+
     @Test
     void testHelloEndpoint() {
         given()
-                .when().get("/hello")
+                .when().get("/movie")
                 .then()
                 .statusCode(200)
-                .body(is("Hello from Quarkus REST"));
+                .body(is("[]"));
     }
-
 }
