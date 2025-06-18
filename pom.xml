@@ -12,7 +12,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.22.3</quarkus.platform.version>
+        <!-- update to 3.24 when available -->
+        <quarkus.platform.version>3.23.2</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
         <formatter.plugin.version>2.26.0</formatter.plugin.version>
@@ -50,11 +51,15 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-opentelemetry</artifactId>
+            <artifactId>quarkus-cache</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-cache</artifactId>
+            <artifactId>quarkus-messaging-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.strimzi</groupId>
+            <artifactId>kafka-oauth-client</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

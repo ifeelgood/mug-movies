@@ -9,22 +9,18 @@ import org.bson.types.ObjectId;
 
 import ifg.mug.movies.mongo.Movie;
 
-import io.quarkus.cache.CacheInvalidate;
 import io.quarkus.cache.CacheResult;
+import io.quarkus.logging.Log;
 import io.quarkus.mongodb.rest.data.panache.PanacheMongoEntityResource;
 
 public interface MovieResource extends PanacheMongoEntityResource<Movie, ObjectId> {
-    //    Map<ObjectId, Movie> cache = new ConcurrentHashMap<>();
 
     @GET
-    @Path("/cached/{id}")
+    @Path("/{id}/cached")
     @Produces("application/json")
     @CacheResult(cacheName = "movieCache")
-    default Movie findByIdCached(@PathParam("id") ObjectId id) {
-        return Movie.findById(id);
-    }
-
-    @CacheInvalidate(cacheName = "movieCache")
-    default void invalidateCache(ObjectId id) {
+    default Movie findByIdCached(@PathParam("id") String id) {
+        Log.debugf("Find movie by id: %s", id);
+        return Movie.findById(new ObjectId(id));
     }
 }
