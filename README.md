@@ -27,6 +27,7 @@ quarkus.mongodb.database=sample_mflix
 %dev.quarkus.tls.mongo.key-store.pem.key-certs.cert=.tls/mongo-cert.pem
 ```
 Note: The `mongo-key.pem` and `mongo-cert.pem` files can be obtained from your Atlas UI and should be placed in the `.tls` directory at the root of your project.
+
 4. Create a new entity class `Movie.java` in `src/main/java/ifg/mug/movies/entity` and define the fields you want to expose.
 ``` java
 @MongoEntity(collection = "movies")
@@ -34,7 +35,7 @@ public class Movie extends PanacheMongoEntity {
     // Define your fields here
 }
 ```
-6. Create PanacheMongoEntityResource class `MovieResource.java` in `src/main/java/ifg/mug/movies/rest`:
+5. Create PanacheMongoEntityResource class `MovieResource.java` in `src/main/java/ifg/mug/movies/rest`:
 ``` java
 public interface MovieResource extends PanacheMongoEntityResource<Movie, ObjectId> {
 }
@@ -47,19 +48,19 @@ public interface MovieResource extends PanacheMongoEntityResource<Movie, ObjectI
 
 ### Measure performance with oha
 
-1. Install [oha (おはよう)](https://github.com/hatoo/oha?tab=readme-ov-file#download-pre-built-binary).
-2. Run the load test:
+8. Install [oha (おはよう)](https://github.com/hatoo/oha?tab=readme-ov-file#download-pre-built-binary).
+9. Run the load test:
 ``` shell
 oha -z 10s -c 20 -q 50 --latency-correction --disable-keepalive 'http://localhost:8080/movie?title=The%20Four%20Horsemen%20of%20the%20Apocalypse'
 ```
 
 ### Introduce Cache
 
-1. Add the `quarkus-cache` extension to your project:
+10. Add the `quarkus-cache` extension to your project:
 ``` shell
 ./mvnw quarkus:add-extension -Dextensions="quarkus-cache"
 ```
-2. Introduce caching in your `MovieResource.java`:
+11. Introduce caching in your `MovieResource.java`:
 ``` java
     @GET
     @Path("/{id}/cached")
@@ -70,18 +71,18 @@ oha -z 10s -c 20 -q 50 --latency-correction --disable-keepalive 'http://localhos
         return Movie.findById(new ObjectId(id));
     }
 ```
-3. Repeat the load test with caching enabled:
+12. Repeat the load test with caching enabled:
 ``` shell
 oha -z 10s -c 20 -q 50 --latency-correction --disable-keepalive 'http://localhost:8080/movie/5f8d0b2f4d3e2c001f8b4567/cached'
 ```
 
 ### Introduce cache invalidation with Kafka
-1. Set Atlas Stream Processor to listen to the `movie` collection and produce events to a Kafka topic.
-2. Add the `quarkus-kafka-client` extension to your project:
+13. Set Atlas Stream Processor to listen to the `movie` collection and produce events to a Kafka topic. 
+14. Add the `quarkus-kafka-client` extension to your project:
 ``` shell
 ./mvnw quarkus:add-extension -Dextensions="quarkus-kafka-client"
 ```
-3. Configure the Kafka connection in `src/main/resources/application.properties`:
+15. Configure the Kafka connection in `src/main/resources/application.properties`:
 ``` properties
 %dev.kafka.bootstrap.servers=${ENV_KAFKA_BOOTSTRAP_SERVERS}
 kafka.group.id=mug-movies
@@ -101,7 +102,7 @@ ENV_KAFKA_BOOTSTRAP_SERVERS=YOUR_URL_HERE.aws.confluent.cloud:9092
 ENV_KAFKA_CLUSTER_API_KEY=INSERT_YOUR_KAFKA_CLUSTER_API_KEY_HERE
 ENV_KAFKA_CLUSTER_API_SECRET=INSERT_YOUR_KAFKA_CLUSTER_API_SECRET_HERE
 ```
-3. Create a Kafka consumer `MovieCdcConsumer.java`:
+16. Create a Kafka consumer `MovieCdcConsumer.java`:
 ``` java
     @Incoming("mug-movies-cdc")
     public void consume(ConsumerRecord<String, String> record) {
@@ -114,9 +115,9 @@ ENV_KAFKA_CLUSTER_API_SECRET=INSERT_YOUR_KAFKA_CLUSTER_API_SECRET_HERE
         Log.debugf("Cache invalidated for movie with id: %s", id);
     }
 ```
-4. Set logging level to DEBUG in `src/main/resources/application.properties`:
+17. Set logging level to DEBUG in `src/main/resources/application.properties`:
 ``` properties
 quarkus.log.category."ifg".level=DEBUG
 ```
-5. Verify that the cache is invalidated when a movie is updated in the MongoDB collection. You can do this by updating a movie in the MongoDB Atlas UI and checking the logs for cache invalidation messages.
-6. Well done! You have successfully implemented a simple CRUD REST API with MongoDB, measured its performance, introduced caching, and set up cache invalidation using Kafka.
+18. Verify that the cache is invalidated when a movie is updated in the MongoDB collection. You can do this by updating a movie in the MongoDB Atlas UI and checking the logs for cache invalidation messages.
+19. Well done! You have successfully implemented a simple CRUD REST API with MongoDB, measured its performance, introduced caching, and set up cache invalidation using Kafka.
