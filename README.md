@@ -9,7 +9,7 @@
 
 ### Simple CRUD REST API with MongoDB
 
-1. [install quarkus cli](https://quarkus.io/guides/cli-tooling).
+1. [Install quarkus cli](https://quarkus.io/guides/cli-tooling).
 2. Set up a new Quarkus project using the Quarkus CLI.
 ``` shell 
 quarkus create app ifg:mug-movies --extension='quarkus-mongodb-rest-data-panache,quarkus-rest,quarkus-rest-jackson' --no-code
@@ -23,8 +23,8 @@ quarkus.mongodb.database=sample_mflix
 %dev.quarkus.mongodb.tls-configuration-name=mongo
 %dev.quarkus.mongodb.credentials.auth-mechanism=MONGODB-X509
 
-%dev.quarkus.tls.mongo.key-store.pem.key-certs.key=.tls/mongo-key.pem
-%dev.quarkus.tls.mongo.key-store.pem.key-certs.cert=.tls/mongo-cert.pem
+%dev.quarkus.tls.mongo.key-store.pem.key-certs.key=.tls/mongo.pem
+%dev.quarkus.tls.mongo.key-store.pem.key-certs.cert=.tls/mongo.pem
 ```
 Note: The `mongo-key.pem` and `mongo-cert.pem` files can be obtained from your Atlas UI and should be placed in the `.tls` directory at the root of your project.
 
@@ -51,7 +51,7 @@ public interface MovieResource extends PanacheMongoEntityResource<Movie, ObjectI
 8. Install [oha (おはよう)](https://github.com/hatoo/oha?tab=readme-ov-file#download-pre-built-binary).
 9. Run the load test:
 ``` shell
-oha -z 10s -c 20 -q 50 --latency-correction --disable-keepalive 'http://localhost:8080/movie?title=The%20Four%20Horsemen%20of%20the%20Apocalypse'
+oha -z 10s -c 20 -q 100 --latency-correction --disable-keepalive 'http://localhost:8080/movie/573a1393f29313caabcddbed'
 ```
 
 ### Introduce Cache
@@ -73,14 +73,14 @@ oha -z 10s -c 20 -q 50 --latency-correction --disable-keepalive 'http://localhos
 ```
 12. Repeat the load test with caching enabled:
 ``` shell
-oha -z 10s -c 20 -q 50 --latency-correction --disable-keepalive 'http://localhost:8080/movie/5f8d0b2f4d3e2c001f8b4567/cached'
+oha -z 10s -c 20 -q 100 --latency-correction --disable-keepalive 'http://localhost:8080/movie/573a1393f29313caabcddbed/cached'
 ```
 
 ### Introduce cache invalidation with Kafka
 13. Set Atlas Stream Processor to listen to the `movie` collection and produce events to a Kafka topic. 
 14. Add the `quarkus-kafka-client` extension to your project:
 ``` shell
-./mvnw quarkus:add-extension -Dextensions="quarkus-kafka-client"
+./mvnw quarkus:add-extension -Dextensions="quarkus-kafka-client,messaging-kafka"
 ```
 15. Configure the Kafka connection in `src/main/resources/application.properties`:
 ``` properties
@@ -115,9 +115,9 @@ ENV_KAFKA_CLUSTER_API_SECRET=INSERT_YOUR_KAFKA_CLUSTER_API_SECRET_HERE
         Log.debugf("Cache invalidated for movie with id: %s", id);
     }
 ```
-17. Set logging level to DEBUG in `src/main/resources/application.properties`:
+17. Set kafka consumer logging level to DEBUG in `src/main/resources/application.properties`:
 ``` properties
-quarkus.log.category."ifg".level=DEBUG
+quarkus.log.category."ifg.mug.movies.kafka".level=DEBUG
 ```
 18. Verify that the cache is invalidated when a movie is updated in the MongoDB collection. You can do this by updating a movie in the MongoDB Atlas UI and checking the logs for cache invalidation messages.
 19. Well done! You have successfully implemented a simple CRUD REST API with MongoDB, measured its performance, introduced caching, and set up cache invalidation using Kafka.
